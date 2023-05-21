@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'application'
+
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+run{
+    standardInput(System.in)
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    // https://mvnrepository.com/artifact/org.jsoup/jsoup
+    implementation group: 'org.jsoup', name: 'jsoup', version: '1.15.4'
+
+
+
+
+}
+
+test {
+    useJUnitPlatform()
+}
