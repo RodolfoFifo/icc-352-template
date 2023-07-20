@@ -1,0 +1,142 @@
+<div th:fragment="menu">
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav text-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Inicio</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav text-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/etiquetas">Etiquetas</a>
+                    </li>
+                </ul>
+                <ul th:if="${session.rol == 'admin' || session.rol == 'author'}" class="navbar-nav text-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/articulos">Crear Articulo</a>
+                    </li>
+                </ul>
+                <ul th:if="${session.rol == 'admin'}" class="navbar-nav text-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/usuario/crear">Crear Usuario</a>
+                    </li>
+                </ul>
+                <ul th:if="${session.rol == 'admin' || session.rol == 'author'}" class="navbar-nav text-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/chat">Chat</a>
+                    </li>
+                </ul>
+                
+            </div>
+            <div class="d-flex justify-content-end collapse navbar-collapse" id="navbarNav2">
+                <div class="d-flex justify-content-end">
+                    <ul class="navbar-nav text-center">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">Cerrar Sesion</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<div th:if="${session.rol != 'admin' && session.rol != 'author'}"  th:fragment="chat">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+
+    <style>
+        .chat-wrapper {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .chat {
+            display: none;
+            height: 400px;
+            width: 300px
+            /* Estilos de diseño del chat */
+        }
+
+        .chat.open {
+            display: block;
+        }
+
+        .chat-button {
+            text-align: right;
+        }
+    </style>
+
+    <div class="chat-wrapper">
+        <div class="card p-2 mb-1 chat">
+            <div class="row mb-2">
+                <div class="col-9">
+                    <input id="name_field" class="form-control" type="text" placeholder="Ingrese un nombre">
+                </div>
+                <div class="col-3">
+                    <button id="submit_button" onclick="validateChatName()" type="button" class="w-100 h-100 btn btn-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="col-12 mt-1">
+                    <select id="select_client" onchange="changeClient()" class="form-select"></select>
+                </div>
+            </div>
+            <div id="message_chat" style="height: 100%; max-height: 255px; overflow-y: auto" class="py-2"></div>
+            <div class="row">
+                <div class="col-9">
+                    <input id="input_message" class="form-control" type="text" placeholder="Ingrese su texto" disabled>
+                </div>
+                <div class="col-3">
+                    <button id="send_button" onclick="sendMessage()" class="w-100 h-100 btn btn-primary" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                            <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+        <div class="chat-button">
+            <button class="btn btn-primary">Abrir chat</button>
+        </div>
+    </div>
+    <script>
+        var client;
+        var sender;
+
+        $(document).ready(function() {
+            loadClients()
+
+            $('.chat-button').click(function() {
+                $('.chat').toggleClass('open');
+            });
+
+        });
+
+        function loadClients() {
+            $.ajax({
+                url: "/get/clients",
+                method: "POST",
+            })
+            .done(function(clients) {
+                clients.forEach(client => {
+                    $('#select_client').append(`<option val="${client}">${client}</option>`)
+                })
+
+                client = $('#select_client').val();
+            });
+        }
+
+        function changeClient() {
+            client = $('#select_client').val();
+            sendRequest();
+        }
+    </script>
+    <script src="/js/websocket_sender.js"></script>
+    <script src="/js/websocket_listener.js"></script>
+</div>

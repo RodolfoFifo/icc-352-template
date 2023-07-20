@@ -1,0 +1,49 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"
+      xmlns:th="http://www.w3.org/1999/xhtml">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+<div class="container mt-3">
+    <div class="row">
+        <h1 class="text-center">Chat</h1>
+    </div>
+    <hr>
+    <div th:replace="base.html::menu"></div>
+    <hr>
+    <div class="container row" style="height: 425px;">
+        <div id="list_clients" style="max-height:100%; overflow-y:auto" class="h-100 col-3 p-3 border">
+            <span th:each="c:${clients}" style="cursor: pointer" class="row rounded text-white bg-primary d-flex justify-content-center py-1 mb-2" th:text="${c}"></span></di>
+        </div>
+        <div style="max-height:100%; overflow-y:auto" class="h-100 col-9 p-0 border">
+            <div id="message_chat" class="p-3" style="height:85%; max-height:85%; overflow-y: auto">
+            </div>
+            <div style="height:15%" class="row border">
+                <div class="col-10 d-flex justify-content-center align-items-center">
+                    <input id="input_message" type="text" class="w-75" disabled>
+                </div>
+                <div class="col-1 py-2">
+                    <button id="send_button" onclick="sendMessage()" class="h-100 btn btn-primary" disabled="">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                            <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var client;
+    var sender = '[[${sender}]]';
+
+    $('#list_clients span').on('click', function () {
+        client = $(this).text();
+        $('#input_message').attr('disabled', false);
+        $('#send_button').attr('disabled', false);
+        sendRequest()
+    })
+</script>
+<script src="/js/websocket_sender.js"></script>
+<script src="/js/websocket_listener.js"></script>
